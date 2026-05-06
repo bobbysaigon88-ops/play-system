@@ -90,9 +90,38 @@
       return { width, height: width };
     }
 
-    function pick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+    function hashString(str) {
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+  }
+  return hash >>> 0;
+}
+
+function seededRandom(seed) {
+  let value = seed >>> 0;
+  return function () {
+    value += 0x6d2b79f5;
+    let t = value;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// CREATE A STABLE SEED FROM CONTENT
+const seedSource = sourceCards
+  .map(function(card) {
+    return (card.textContent || "").trim() + "-" + (card.getAttribute("data-size") || "");
+  })
+  .join("|");
+
+const rand = seededRandom(hashString(seedSource));
+
+function pick(arr) {
+  return arr[Math.floor(rand() * arr.length)];
+}
 
     function overlaps(a, b) {
       return !(
