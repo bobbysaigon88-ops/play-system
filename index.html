@@ -2,371 +2,193 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Play System V1</title>
 
   <style>
-    /* PASTE YOUR EXISTING STYLE CODE HERE */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    [data-generative-layout="true"].play-generative {
+      --gap: 32px;
+      width: min(100%, 1440px);
+      margin: 80px auto;
+      position: relative;
+    }
+
+    .play-card {
+      position: absolute;
+      background: rgba(36, 0, 255, 0.18);
+      outline: 1px solid rgba(36, 0, 255, 0.6);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 12px;
+      font-size: 12px;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- THIS is your container -->
   <div data-generative-layout="true" class="play-generative">
 
-    <!-- TEMP test cards (simulate CMS) -->
-    <div class="collection-item-index-cards" data-size="small">01</div>
-    <div class="collection-item-index-cards" data-size="medium">02</div>
-    <div class="collection-item-index-cards" data-size="large">03</div>
-    <div class="collection-item-index-cards" data-size="xsmall">04</div>
-    <div class="collection-item-index-cards" data-size="medium">05</div>
-    <div class="collection-item-index-cards" data-size="large">06</div>
+    <!-- Simulated CMS cards -->
+    <div class="collection-item-index-cards" data-size="small">(01)</div>
+    <div class="collection-item-index-cards" data-size="medium">(02)</div>
+    <div class="collection-item-index-cards" data-size="large">(03)</div>
+    <div class="collection-item-index-cards" data-size="xsmall">(04)</div>
+    <div class="collection-item-index-cards" data-size="medium">(05)</div>
+    <div class="collection-item-index-cards" data-size="large">(06)</div>
+    <div class="collection-item-index-cards" data-size="small">(07)</div>
+    <div class="collection-item-index-cards" data-size="medium">(08)</div>
+    <div class="collection-item-index-cards" data-size="xsmall">(09)</div>
+    <div class="collection-item-index-cards" data-size="large">(10)</div>
+    <div class="collection-item-index-cards" data-size="medium">(11)</div>
+    <div class="collection-item-index-cards" data-size="large">(12)</div>
 
   </div>
 
   <script>
-    <style>
-  [data-generative-layout="true"].play-generative {
-    --gap: 32px;
-    width: min(100%, 1440px);
-    margin: 0 auto;
-    position: relative;
-  }
+  document.addEventListener("DOMContentLoaded", function () {
 
-  [data-generative-layout="true"] .play-card {
-    position: absolute;
-    display: block;
-    background: rgba(36, 0, 255, 0.18);
-    outline: 1px solid rgba(36, 0, 255, 0.6);
-    overflow: visible;
-  }
+    const root = document.querySelector('[data-generative-layout="true"]');
+    if (!root) return;
 
-  [data-generative-layout="true"] .play-card * {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  [data-generative-layout="true"] .play-card.is-portrait {
-    overflow: hidden;
-  }
-
-  [data-generative-layout="true"] .play-card.is-portrait::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 16.666%;
-    right: 16.666%;
-    background: rgba(36, 0, 255, 0.28);
-    z-index: 0;
-  }
-
-  [data-generative-layout="true"] .play-card > * {
-    position: relative;
-    z-index: 1;
-  }
-</style>
-
-<script>
-[data-generative-layout="true"].play-generative {
-    --gap: 32px;
-    width: min(100%, 1440px);
-    margin: 0 auto;
-    position: relative;
-  }
-
-  [data-generative-layout="true"] .play-card {
-    position: absolute;
-    display: block;
-    background: rgba(36, 0, 255, 0.18);
-    outline: 1px solid rgba(36, 0, 255, 0.6);
-    overflow: visible;
-  }
-
-  [data-generative-layout="true"] .play-card * {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  [data-generative-layout="true"] .play-card.is-portrait {
-    overflow: hidden;
-  }
-
-  [data-generative-layout="true"] .play-card.is-portrait::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 16.666%;
-    right: 16.666%;
-    background: rgba(36, 0, 255, 0.28);
-    z-index: 0;
-  }
-
-  [data-generative-layout="true"] .play-card > * {
-    position: relative;
-    z-index: 1;
-  }
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const root = document.querySelector('[data-generative-layout="true"]');
-  if (!root) return;
-
-  const sourceCards = Array.from(root.querySelectorAll(".collection-item-index-cards"));
-
-  const CONFIG = {
-    columns: 12,
-    gap: 32,
-
-    topPadding: 64,
-    bottomPadding: 120,
-
-    minYGap: 32,
-    maxAttempts: 80,
-
-    sizeToSpan: {
-      xsmall: 2,
-      small: 3,
-      medium: 4,
-      large: 6
-    },
-
-    yBands: ["high", "mid", "low"],
-
-    bandOffset: {
-      high: 0,
-      mid: 120,
-      low: 260
-    },
-
-    rowStep: 260
-  };
-
-  function hashString(str) {
-    let hash = 2166136261;
-
-    for (let i = 0; i < str.length; i++) {
-      hash ^= str.charCodeAt(i);
-      hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
-    }
-
-    return hash >>> 0;
-  }
-
-  function seededRandom(seed) {
-    let value = seed >>> 0;
-
-    return function () {
-      value += 0x6d2b79f5;
-      let t = value;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  function pick(arr, rand) {
-    return arr[Math.floor(rand() * arr.length)];
-  }
-
-  function getAllowedRatios(size) {
-    if (size === "large") {
-      return ["landscape", "square"];
-    }
-
-    if (size === "medium") {
-      return ["landscape", "square", "portrait"];
-    }
-
-    return ["portrait", "square", "landscape"];
-  }
-
-  function chooseRatio(size, history, rand) {
-    const allowed = getAllowedRatios(size);
-    const last = history[history.length - 1];
-    const secondLast = history[history.length - 2];
-
-    let candidates = allowed.slice();
-
-    if (last && secondLast && last === secondLast) {
-      candidates = candidates.filter(function (ratio) {
-        return ratio !== last;
-      });
-    }
-
-    const recent = history.slice(-3);
-    const unused = candidates.filter(function (ratio) {
-      return !recent.includes(ratio);
-    });
-
-    if (unused.length) {
-      candidates = unused;
-    }
-
-    return pick(candidates, rand);
-  }
-
-  function chooseYBand(history, index, rand) {
-    let candidates = CONFIG.yBands.slice();
-
-    const last = history[history.length - 1];
-    const secondLast = history[history.length - 2];
-
-    if (last && secondLast && last === secondLast) {
-      candidates = candidates.filter(function (band) {
-        return band !== last;
-      });
-    }
-
-    if (index < 3) {
-      candidates = candidates.filter(function (band) {
-        return !history.includes(band);
-      });
-
-      if (!candidates.length) {
-        candidates = CONFIG.yBands.slice();
-      }
-    }
-
-    const recent = history.slice(-4);
-    if (recent.length >= 3) {
-      const hasHigh = recent.includes("high");
-      const hasLow = recent.includes("low");
-
-      if (!hasHigh && candidates.includes("high")) {
-        return "high";
-      }
-
-      if (!hasLow && candidates.includes("low")) {
-        return "low";
-      }
-    }
-
-    return pick(candidates, rand);
-  }
-
-  function getCardSize(width, ratio) {
-    if (ratio === "landscape") {
-      return {
-        width: width,
-        height: width * (2 / 3)
-      };
-    }
-
-    return {
-      width: width,
-      height: width
-    };
-  }
-
-  function overlaps(a, b) {
-    return !(
-      a.x + a.width <= b.x ||
-      b.x + b.width <= a.x ||
-      a.y + a.height + CONFIG.minYGap <= b.y ||
-      b.y + b.height + CONFIG.minYGap <= a.y
+    const sourceCards = Array.from(
+      root.querySelectorAll(".collection-item-index-cards")
     );
-  }
 
-  function render() {
-    const seedSource = sourceCards
-      .map(function (card) {
-        return (card.textContent || "").trim() + "-" + (card.getAttribute("data-size") || "");
-      })
-      .join("|");
+    const CONFIG = {
+      columns: 12,
+      gap: 32,
+      topPadding: 80,
+      bottomPadding: 120,
+      rowStep: 260,
 
-    const rand = seededRandom(hashString(seedSource));
+      sizeToSpan: {
+        xsmall: 2,
+        small: 3,
+        medium: 4,
+        large: 6
+      },
 
-    root.innerHTML = "";
-    root.classList.add("play-generative");
+      ratios: ["square", "landscape", "portrait"],
+      bandOffset: {
+        high: -80,
+        mid: 0,
+        low: 80
+      }
+    };
 
-    const fieldWidth = root.clientWidth;
-    const colWidth = (fieldWidth - CONFIG.gap * (CONFIG.columns - 1)) / CONFIG.columns;
+    function getCardSize(width, ratio) {
+      if (ratio === "landscape") return { width, height: width * 0.66 };
+      if (ratio === "portrait") return { width, height: width * 1.3 };
+      return { width, height: width };
+    }
 
-    const placed = [];
-    const arHistory = [];
-    const yHistory = [];
+    function pick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
 
-    let colCursor = 1;
-    let rowIndex = 0;
-    let maxY = 0;
+    function overlaps(a, b) {
+      return !(
+        a.x + a.width < b.x ||
+        a.x > b.x + b.width ||
+        a.y + a.height < b.y ||
+        a.y > b.y + b.height
+      );
+    }
+
+    function render() {
+
+      const fieldWidth = root.clientWidth;
+      const colWidth =
+        (fieldWidth - CONFIG.gap * (CONFIG.columns - 1)) /
+        CONFIG.columns;
+
+      const placed = [];
+      let colCursor = 1;
+      let rowIndex = 0;
+      let maxY = 0;
 
       sourceCards.forEach(function (sourceCard, index) {
-  const size = (sourceCard.getAttribute("data-size") || "xsmall").toLowerCase();
-  const span = CONFIG.sizeToSpan[size] || 2;
 
-  if (colCursor + span - 1 > CONFIG.columns) {
-    colCursor = 1;
-    rowIndex++;
-  }
+        const size =
+          (sourceCard.getAttribute("data-size") || "xsmall").toLowerCase();
 
-  const ratio = chooseRatio(size, arHistory, rand);
-  const yBand = chooseYBand(yHistory, index, rand);
+        const span = CONFIG.sizeToSpan[size] || 2;
 
-  const width = colWidth * span + CONFIG.gap * (span - 1);
-  const cardSize = getCardSize(width, ratio);
+        if (colCursor + span - 1 > CONFIG.columns) {
+          colCursor = 1;
+          rowIndex++;
+        }
 
-  const x = (colCursor - 1) * (colWidth + CONFIG.gap);
-  const baseY = CONFIG.topPadding + rowIndex * CONFIG.rowStep;
-  let y = baseY + CONFIG.bandOffset[yBand];
+        const ratio = pick(CONFIG.ratios);
+        const yBand = pick(["high", "mid", "low"]);
 
-  let candidate = {
-    x: x,
-    y: y,
-    width: cardSize.width,
-    height: cardSize.height
-  };
+        const width =
+          colWidth * span + CONFIG.gap * (span - 1);
 
-  let attempts = 0;
+        const cardSize = getCardSize(width, ratio);
 
-  while (
-    placed.some(function (item) {
-      return overlaps(candidate, item);
-    }) &&
-    attempts < CONFIG.maxAttempts
-  ) {
-    y += 24;
-    candidate.y = y;
-    attempts++;
-  }
+        const x =
+          (colCursor - 1) * (colWidth + CONFIG.gap);
 
-  const card = sourceCard.cloneNode(true);
-  card.classList.add("play-card");
-  card.style.display = "block";
+        const baseY =
+          CONFIG.topPadding + rowIndex * CONFIG.rowStep;
 
-  card.style.left = candidate.x + "px";
-  card.style.top = candidate.y + "px";
-  card.style.width = candidate.width + "px";
-  card.style.height = candidate.height + "px";
+        let y =
+          baseY + CONFIG.bandOffset[yBand];
 
-  card.classList.toggle("is-portrait", ratio === "portrait");
-  card.setAttribute("data-ratio", ratio);
-  card.setAttribute("data-span", span);
-  card.setAttribute("data-y-band", yBand);
+        let candidate = {
+          x: x,
+          y: y,
+          width: cardSize.width,
+          height: cardSize.height
+        };
 
-  root.appendChild(card);
+        let attempts = 0;
 
-  placed.push(candidate);
-  arHistory.push(ratio);
-  yHistory.push(yBand);
+        while (
+          placed.some((item) => overlaps(candidate, item)) &&
+          attempts < 10
+        ) {
+          candidate.y += 24;
+          attempts++;
+        }
 
-  maxY = Math.max(maxY, candidate.y + candidate.height);
+        const card = sourceCard.cloneNode(true);
+        card.classList.add("play-card");
 
-  colCursor += span;
-});
+        card.style.left = candidate.x + "px";
+        card.style.top = candidate.y + "px";
+        card.style.width = candidate.width + "px";
+        card.style.height = candidate.height + "px";
 
-root.style.height = maxY + CONFIG.bottomPadding + "px";
-}
+        root.appendChild(card);
 
-render();
+        placed.push(candidate);
 
-window.addEventListener("resize", function () {
-render();
-});
-});
+        maxY = Math.max(
+          maxY,
+          candidate.y + candidate.height
+        );
+
+        colCursor += span;
+      });
+
+      root.style.height =
+        maxY + CONFIG.bottomPadding + "px";
+    }
+
+    render();
+    window.addEventListener("resize", render);
+
+  });
   </script>
 
 </body>
